@@ -19,7 +19,7 @@ from PulseAnimation import PulseAnimation
 from HighScoreDisplay import importScores
 
 class Application():
-    pygame.mixer.set_num_channels(2)  # set the maximum number of channels of playback are allowed for audio
+    pygame.mixer.set_num_channels(2)  # set the maximum number of channels of playback that are allowed for audio
     songPlayback = pygame.mixer.Channel(0)  # the channel that will play the background music for the game during play
 
     # list of songs that will be played as background music during active gameplay (not during menus)
@@ -473,9 +473,6 @@ class Application():
 
     # insert a new high schore into the last at the specified index, pushing everything below the index down one space in the list (i.e. if index was 5, the item at index 3 would be pushed to index 4), shifting everything below the index down in the list
     def insertNewHighScore(self, time, index):
-        print(time)
-        print(scores[index])
-        print(scores)
         for i in range(len(scores) - index):
             scores[len(scores) - i - 1][0] = scores[len(scores) - i - 2][0]
             scores[len(scores) - i - 1][1] = scores[len(scores) - i - 2][1]
@@ -483,4 +480,3 @@ class Application():
         scores[index][0] = time['minutes']
         scores[index][1] = time['seconds']
         scores[index][2] = int(time['milliseconds'] / 10)
-        print(scores)
