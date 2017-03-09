@@ -15,7 +15,8 @@ from MainMenu import MainMenu
 from PauseMenu import PauseMenu
 from GameOverScreen import GameOverScreen
 from HighScoreDisplay import scores
-
+from PulseAnimation import PulseAnimation
+from HighScoreDisplay import importScores
 
 class Application():
     pygame.mixer.set_num_channels(2)  # set the maximum number of channels of playback are allowed for audio
@@ -95,6 +96,8 @@ class Application():
         self.gameOverScreen = GameOverScreen(self.screen)
         self.pauseMenu = PauseMenu(self.screen[0], self.screen[1])
 
+        self.song_num = random.randint(0, len(self.songs) - 1)
+
 
     def run(self):
         while(self.restart):
@@ -104,10 +107,13 @@ class Application():
                 self.framesPerRound = self.def_frames_per_round
 
                 # User is in the main menu
+                if(self.game_state == self.game_states['Main Menu']):
+                    self.curr_song = self.songs[7]
+                    self.curr_song.play()
+
                 while(self.game_state == self.game_states['Main Menu'] and not self.terminate):
                     self.fps = 30
                     # stop playing the current song
-                    self.curr_song.fadeout(10)
 
                     # make the mouse visible to the player
                     pygame.mouse.set_visible(True)
@@ -140,6 +146,7 @@ class Application():
                     pygame.display.update()
                 if(self.game_state == self.game_states['Game Over'] and not self.terminate):
                     self.curr_song.fadeout(100)
+                    importScores("Assets/highscores.txt")
 
                 while(self.game_state == self.game_states['Game Over'] and not self.terminate):
                     # player is seeing the game over screen
@@ -295,6 +302,8 @@ class Application():
                         self.gameBoard.iterateTiles()
 
                     self.gameClock.tick(self.fps)
+                    self.boardPulseAnimation.iterate()
+                    self.boardPulseAnimation.update(self.gameWindow, 'center')
                     self.gameBoard.update(self.gameWindow)
                     self.player.update(self.gameWindow)
                     pygame.display.update()
@@ -320,25 +329,14 @@ class Application():
         self.restart = True
 
         self.curr_song.fadeout(10)
-        song_num = random.randint(0, len(self.songs) - 1)
-        self.curr_song = self.songs[song_num]
+        self.song_num = random.randint(0, len(self.songs) - 1)
+        self.curr_song = self.songs[self.song_num]
 
         # reset the game counter (keeps track of what to do when by modulus operation)
         self.counter = 0
 
         # reset the gameboard to a new board as the game starts
         self.gameBoard = Board(self.screen[0] * 0.8, self.screen[0] * 0.8, self.tiles_wide, self.tiles_wide, self.screen)
-
-        # reset the player position to the center of the first active tile on the board (the pure white tile)
-        self.player.posX = self.gameBoard.activeTiles[numTilesAhead].positionX + (self.gameBoard.activeTiles[numTilesAhead].width / 2)
-        self.player.posY = self.gameBoard.activeTiles[numTilesAhead].positionY + (self.gameBoard.activeTiles[numTilesAhead].height / 2)
-
-        # move the player mouse to the center of the player object for ease of play at start of game
-        pygame.mouse.set_pos(self.player.posX, self.player.posY)
-        self.resetStopWatch()
-
-        if(self.game_state == self.game_states['Game Active']):
-            self.curr_song.play()
 
 
     def prepNewGame(self):
@@ -348,7 +346,31 @@ class Application():
         self.restart = True
         self.resetStopWatch()
         self.counter = 0
+        self.curr_song = self.songs[self.song_num]
         self.curr_song.play()
+
+        # reset the player position to the center of the first active tile on the board (the pure white tile)
+        self.player.posX = self.gameBoard.activeTiles[numTilesAhead].positionX + (self.gameBoard.activeTiles[numTilesAhead].width / 2)
+        self.player.posY = self.gameBoard.activeTiles[numTilesAhead].positionY + (self.gameBoard.activeTiles[numTilesAhead].height / 2)
+
+        # move the player mouse to the center of the player object for ease of play at start of game
+        pygame.mouse.set_pos(self.player.posX, self.player.posY)
+        # set up the animation that will be played around the game board during play
+        self.boardPulseAnimation = PulseAnimation('rectangle',
+                                                  [i for i in range(int(self.gameBoard.x), int(self.gameBoard.x + 1))],
+                                                  [i for i in range(int(self.gameBoard.y), int(self.gameBoard.y + 1))],
+                                                  [i for i in range(int(self.gameBoard.height), int(self.gameBoard.height + 1))],
+                                                  [i for i in range(int(self.gameBoard.width), int(self.gameBoard.width + 1))],
+                                                  [i for i in range(254, 255)],
+                                                  [i for i in range(0, 255)],
+                                                  [i for i in range(0, int(self.screen[0] * 0.05))],
+                                                  15, 1,
+                                                  {
+                                                      'left': int(self.gameBoard.x),
+                                                      'right': int(self.gameBoard.x + self.gameBoard.width),
+                                                      'top': int(self.gameBoard.y),
+                                                      'bottom': int(self.gameBoard.y + self.gameBoard.height)
+                                                  })
 
 
     # resets the stopwatch that tracks the time a player lasts during play
@@ -420,27 +442,25 @@ class Application():
         if (self.gameplay_time['milliseconds'] / 10 < 10):
             milliseconds = '0' + str('%.0f' % (self.gameplay_time['milliseconds'] / 10))
         else:
-            milliseconds = str('%.0f' % (self.gameplay_time['milliseconds'] / 10))
+            milliseconds = str('%.0f' % int(self.gameplay_time['milliseconds'] / 10))
 
         gameStopWatchDisplay = Fonts.large.render(str(minutes + ":" + seconds + ":" + milliseconds), False, Colors.white)
         self.gameWindow.blit(gameStopWatchDisplay,
                         (self.screen[0] * 0.075, self.screen[1] * 0.1 * 0.5 - (gameStopWatchDisplay.get_height() / 2)))
 
-
+    # check if the time from the last game was a new record
     def isHighScore(self, time):
         for i in range(len(scores)):
             if(time['minutes'] > scores[i][0]
                or (time['minutes'] == scores[i][0] and time['seconds'] > scores[i][1])
                or time['minutes'] == scores[i][0] and time['seconds'] == scores[i][1] and time['milliseconds'] > scores[i][2]):
-                scores[i][0] = time['minutes']
-                scores[i][1] = time['seconds']
-                scores[i][2] = int(time['milliseconds'] / 10)
+                self.insertNewHighScore(time, i)
                 self.exportScoresToFile()
                 return True
 
         return False
 
-
+    # exports the high score data to a file in order to save data between gameplay sessions
     def exportScoresToFile(self):
         outFile = open("Assets/highscores.txt", 'w')
 
@@ -450,3 +470,17 @@ class Application():
                 outFile.write('\n')
 
         outFile.close()
+
+    # insert a new high schore into the last at the specified index, pushing everything below the index down one space in the list (i.e. if index was 5, the item at index 3 would be pushed to index 4), shifting everything below the index down in the list
+    def insertNewHighScore(self, time, index):
+        print(time)
+        print(scores[index])
+        print(scores)
+        for i in range(len(scores) - index):
+            scores[len(scores) - i - 1][0] = scores[len(scores) - i - 2][0]
+            scores[len(scores) - i - 1][1] = scores[len(scores) - i - 2][1]
+            scores[len(scores) - i - 1][2] = scores[len(scores) - i - 2][2]
+        scores[index][0] = time['minutes']
+        scores[index][1] = time['seconds']
+        scores[index][2] = int(time['milliseconds'] / 10)
+        print(scores)

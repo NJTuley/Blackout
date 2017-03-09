@@ -2,7 +2,6 @@
 from ScoreItem import ScoreItem
 import Colors
 import Fonts
-import pygame
 
 scores = []
 
@@ -22,7 +21,7 @@ class HighScoreDisplay():
 
         self.scoreTitle = Fonts.large.render("High Scores", False, Colors.white)
 
-        self.importScores(fileName)
+        importScores(fileName)
 
         self.sortScores()
 
@@ -54,14 +53,20 @@ class HighScoreDisplay():
         return (str(time[0]) + ":" + str(time[1]) + ":" + str(time[2]))
 
 
-    def importScores(self, filename):
-        file = open(filename, 'r')
-        num_high_scores = 10
+def resetScores():
+    scores =[]
 
-        for i in range(num_high_scores):
-            line = file.readline()
-            line = line.split()
-            if(line):
-                scores.append([int(i) for i in line])
 
-        file.close()
+def importScores(filename):
+    file = open(filename, 'r')
+    num_high_scores = 10
+
+    scores.clear()
+
+    for i in range(num_high_scores):
+        line = file.readline()
+        line = line.split()
+        if(line):
+            scores.append([int(i) for i in line])
+
+    file.close()

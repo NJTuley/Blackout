@@ -7,9 +7,9 @@ import pygame
 import Colors
 
 
-class MinMaxLoopAnimation(Animation):
+class PulseAnimation(Animation):
 
-    def __init__(self, shape, xRange, yRange, heightRange, widthRange, fillRange, borderColorRange, borderWidthRange, duration = 1, numFullCycles = 0):
+    def __init__(self, shape, xRange, yRange, heightRange, widthRange, fillRange, borderColorRange, borderWidthRange, duration = 1, numFullCycles = 0, connectedObjectBounds = None):
         super(Animation, self).__init__()
         self.xRange = xRange
         self.yRange = yRange
@@ -18,6 +18,8 @@ class MinMaxLoopAnimation(Animation):
         self.fillRange = fillRange
         self.borderColorRange = borderColorRange
         self.borderWidthRange = borderWidthRange
+        if(connectedObjectBounds != None):
+            self.connectedObjectBounds = connectedObjectBounds
         if(shape in shapes): # either a circle, rectangle, or sqaure
             self.shape = shape
         else:
@@ -127,7 +129,7 @@ class MinMaxLoopAnimation(Animation):
 
     # update the graphical display of this animation on the pygame screen
     def update(self, window, alignment):
-        if(self.shape == 'rectangle' or self.shape == 'square'):
+        if(self.connectedObjectBounds != None and self.shape == 'rectangle' or self.shape == 'square'):
             x = self.connectedObjectBounds['left'] - (self.x - min(self.xRange))
             y = self.connectedObjectBounds['top'] - (self.y - min(self.yRange))
             if(self.shape == 'square' and self.height != self.width):

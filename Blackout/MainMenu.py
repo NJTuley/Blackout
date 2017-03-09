@@ -1,6 +1,6 @@
 # The Main Menu object for the Blackout game
 
-from MainMenuTitleAnimation import MinMaxLoopAnimation
+from PulseAnimation import PulseAnimation
 from Button import Button
 from Menu import Menu
 import Colors
@@ -40,7 +40,7 @@ class MainMenu(Menu):
         animation_border_width = 35
         animation_max_width = int(self.title.get_width() + 2 * animation_border_width)
         animation_max_height = int(self.title.get_height() + 2 * animation_border_width)
-        self.titleAnimation = MinMaxLoopAnimation('rectangle',
+        self.titleAnimation = PulseAnimation('rectangle',
                                              [i for i in range(int((self.width * 0.5) - (self.title.get_width() * 0.5)),
                                                                int((self.width * 0.5) - (self.title.get_width() * 0.5) + 1) + 1)],
                                              [i for i in range(int((self.height * 0.3) - (self.title.get_height() * 0.5)),
@@ -49,7 +49,7 @@ class MainMenu(Menu):
                                              [i for i in range(int(animation_max_height - 2 * animation_border_width), int(animation_max_height - 2 * animation_border_width) + 1)],
                                              [i for i in range(0, 1)],
                                              [i for i in range(0, 256)],
-                                             [i for i in range(1, animation_border_width + 1)], 60, 4)
+                                             [i for i in range(1, animation_border_width + 1)], 15, 1)
 
         # set the bounds for the animation so that it can align properly around the title text
         self.titleAnimation.setParentBounds(
