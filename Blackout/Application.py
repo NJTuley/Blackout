@@ -31,8 +31,8 @@ class Application():
         Song("Assets/Music/Tobu - Infectious.wav", "Infectious", "Tobu", (4, 17)),
         Song("Assets/Music/Tobu - Candyland [NCS Release].wav", "Candyland", "Tobu", (3, 19)),
         Song("Assets/Music/Alan Walker - Spectre [NCS Release].wav", "Spectre", "Alan Walker", (3, 47)),
-        Song("Assets/Music/Disfigure - Blank.wav", 'Blank', 'Disfigure', (3, 30)),
-        Song("Assets/Music/Jim Yosef - Firefly.wav", "Firefly", "Jim Yosef", (4, 17))
+        Song("Assets/Music/Jim Yosef - Firefly.wav", "Firefly", "Jim Yosef", (4, 17)),
+        Song("Assets/Music/Elektronomia - Limitless.wav", "Limitless", "Elektronomia", (4,4))
     ]
 
     # the different states that the game can be in
@@ -49,7 +49,7 @@ class Application():
     def_player_speed_iter = 2  # the default value for the player's speed
 
     secondsPerIdealGame = 120  # the number of seconds that a player should be able to survive for (if this game had a win condition, it would be upon reaching this point)
-    numTimesSpeedUp = 11  # the number of times that the game will speed up before it reachs the maximum speed
+    numTimesSpeedUp = 11  # the number of times that the game will speed up before it reaches the maximum speed
 
     def __init__(self):
         self.frames_per_round_iter = self.def_frames_per_round_iter  # how often to speed up the game
@@ -108,7 +108,7 @@ class Application():
 
                 # User is in the main menu
                 if(self.game_state == self.game_states['Main Menu']):
-                    self.curr_song = self.songs[7]
+                    self.curr_song = self.songs[8]
                     self.curr_song.play()
 
                 while(self.game_state == self.game_states['Main Menu'] and not self.terminate):
@@ -243,7 +243,7 @@ class Application():
                             if (not (pygame.mouse.get_pos()[1] < self.gameBoard.y or pygame.mouse.get_pos()[1] > self.gameBoard.y + self.gameBoard.height) and pygame.mouse.get_focused() != 0):
                                 self.playerYMove = pygame.mouse.get_pos()[1]
                         if(event.type == pygame.KEYDOWN):
-                            if(event.key == pygame.K_SPACE):
+                            if(event.key == pygame.K_p):
                                 # user wants to pause the game
                                 self.pauseGame()
                                 self.terminate = False
@@ -329,7 +329,7 @@ class Application():
         self.restart = True
 
         self.curr_song.fadeout(10)
-        self.song_num = random.randint(0, len(self.songs) - 1)
+        self.song_num = random.randint(0, len(self.songs) - 2)
         self.curr_song = self.songs[self.song_num]
 
         # reset the game counter (keeps track of what to do when by modulus operation)

@@ -18,7 +18,7 @@ class Song():
 
     # play this song on the background songs playback channel
     def play(self):
-        bg_songs.play(pygame.mixer.Sound(self.filepath))
+        bg_songs.play(pygame.mixer.Sound(self.filepath), -1)
 
 
     def pause(self):
