@@ -20,26 +20,14 @@ class GameOverScreen():
         self.text_color = self.text_color_min
         for i in range(len(self.options_txt)):  # create the buttons for this screen
             self.options.append(Button(50, screen[1] * 0.25, (screen[0] * 0.6), (screen[1] * 0.6 + i * 80), self.options_txt[i], Colors.white, Fonts.standard, Colors.black))
-        self.spinner = GameOverSpinnerAnimation(screen, self.text_color)
+        self.spinner = GameOverSpinnerAnimation(screen, 255)
         self.gameOverTxt = Fonts.title.render("You Blacked Out...", False, (self.text_color, self.text_color, self.text_color))
         self.highScores = HighScoreDisplay((screen[0] * 0.5 - self.gameOverTxt.get_width() / 2), (screen[1] * 0.1 + self.gameOverTxt.get_height() + 20), (screen[0] * 0.4), (screen[1] * 0.6))
 
 
     def update(self, window, screen, time):
-        if(not self.animationDone):
-            self.bg_color = self.max_color_num - (self.counter / 2)
-            self.text_color += 1
-            if(self.text_color > 255):
-                self.text_color = 255
-            self.spinner.text_color = self.text_color
-            self.counter += 1
-            if(self.bg_color < 0):
-                self.bg_color = 0
-        else:
-            self.bg_color = Colors.black[0]
-            self.text_color = Colors.white[0]
-            if(self.counter >= 254):
-                self.animationDone = True
+        self.bg_color = Colors.black[0]
+        self.text_color = Colors.white[0]
 
 
         window.fill(Colors.black)

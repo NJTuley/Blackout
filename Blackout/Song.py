@@ -14,11 +14,17 @@ class Song():
         self.title = title
         self.artist = artist
         self.length = length  # the length of the song, stored in a tuple that is of the format (minutes, seconds), and the values are numeric
+        self.delay = 0
 
 
     # play this song on the background songs playback channel
-    def play(self):
-        bg_songs.play(pygame.mixer.Sound(self.filepath), -1)
+    def play(self, delay):
+        if(self.delay != delay):
+            bg_songs.play(pygame.mixer.Sound(self.filepath), -1)
+        else:
+            self.delay += 1
+
+        pass
 
 
     def pause(self):

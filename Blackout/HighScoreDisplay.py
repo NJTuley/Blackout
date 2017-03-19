@@ -2,9 +2,10 @@
 from ScoreItem import ScoreItem
 import Colors
 import Fonts
+import HighScores
 
-scores = []
 
+NUM_SCORES = 10
 
 class HighScoreDisplay():
 
@@ -21,52 +22,58 @@ class HighScoreDisplay():
 
         self.scoreTitle = Fonts.large.render("High Scores", False, Colors.white)
 
-        importScores(fileName)
+        HighScores.importScores(fileName)
 
-        self.sortScores()
+        HighScores.sortScores()
+        scores_len = len(HighScores.scores)
 
-        for i in range(len(scores)):
-            self.scoreDisplays.append(ScoreItem(i, self.getTimeFormatted(scores[i]), self.x + self.scoreBorderWidth, self.y + self.scoreTitle.get_height() + ((self.scoreBorderWidth + (i * int(self.height / 10))) + self.scoreBorderWidth), self.width - 2 * self.scoreBorderWidth, self.height / len(scores) - 2 * self.scoreBorderWidth))
+        for i in range(NUM_SCORES):
+
+            if (scores_len <= NUM_SCORES and i >= scores_len):
+                # populate any empty high score places
+                timeVal = " - "
+                nameVal = " - "
+            elif (scores_len <=  NUM_SCORES and i < scores_len):
+                timeVal = self.getTimeFormatted(HighScores.scores[i].time)
+                nameVal = HighScores.scores[i].name
+            else:
+                raise Exception("Too many high scores imported")
+
+            self.scoreDisplays.append(ScoreItem(nameVal, timeVal, self.x + self.scoreBorderWidth,
+                                                self.y + self.scoreTitle.get_height() + ((self.scoreBorderWidth + (
+                                                i * int(self.height / 10))) + self.scoreBorderWidth),
+                                                self.width - 2 * self.scoreBorderWidth,
+                                                self.height / 10 - 2 * self.scoreBorderWidth))
 
 
     def update(self, window):
         self.scoreDisplays.clear()
-        for i in range(len(scores)):
-            self.scoreDisplays.append(ScoreItem(i, self.getTimeFormatted(scores[i]), self.x + self.scoreBorderWidth, self.y + self.scoreTitle.get_height() + ((self.scoreBorderWidth + (i * int(self.height / 10))) + self.scoreBorderWidth), self.width - 2 * self.scoreBorderWidth, self.height / len(scores) - 2 * self.scoreBorderWidth))
+        scores_len = len(HighScores.scores)
+
+        for i in range(NUM_SCORES):
+
+            if (scores_len <= NUM_SCORES and i >= scores_len):
+                # populate any empty high score places
+                timeVal = " - "
+                nameVal = " - "
+            elif (scores_len <=  NUM_SCORES and i < scores_len):
+                timeVal = self.getTimeFormatted(HighScores.scores[i].time)
+                nameVal = HighScores.scores[i].name
+            else:
+                raise Exception("Too many high scores imported")
+
+            self.scoreDisplays.append(ScoreItem(nameVal, timeVal, self.x + self.scoreBorderWidth,
+                                                self.y + self.scoreTitle.get_height() + ((self.scoreBorderWidth + (
+                                                i * int(self.height / 10))) + self.scoreBorderWidth),
+                                                self.width - 2 * self.scoreBorderWidth,
+                                                self.height / 10 - 2 * self.scoreBorderWidth))
 
         window.blit(self.scoreTitle, [self.x + (self.width / 2) - (self.scoreTitle.get_width() / 2), self.y])
         for i in range(len(self.scoreDisplays)):
             self.scoreDisplays[i].update(window, self.x + self.width)
 
-
-    # sort the score numeric values that were given
-    def sortScores(self):
-        for i in range(len(scores)):
-            for j in range(len(scores)):
-                if(scores[i] > scores[j]):
-                    temp = scores[i]
-                    scores[i] = scores[j]
-                    scores[j] = temp
-
-
     def getTimeFormatted(self, time):
         return (str(time[0]) + ":" + str(time[1]) + ":" + str(time[2]))
 
 
-def resetScores():
-    scores =[]
 
-
-def importScores(filename):
-    file = open(filename, 'r')
-    num_high_scores = 10
-
-    scores.clear()
-
-    for i in range(num_high_scores):
-        line = file.readline()
-        line = line.split()
-        if(line):
-            scores.append([int(i) for i in line])
-
-    file.close()

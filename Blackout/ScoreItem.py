@@ -13,7 +13,7 @@ class ScoreItem():
         self.y = y
         self.width = width
         self.height = height
-        self.index = index
+        self.name = index
 
 
     # @param rightBorder the right edge of the rectangle object that contains this ScoreItem
@@ -24,4 +24,4 @@ class ScoreItem():
 
         self.scoreText = Fonts.standard.render(str(self.score), False, Colors.black)
         window.blit(self.scoreText, ((rightBorder) - (self.scoreText.get_width() + 40), self.y + (self.height / 2) - (self.scoreText.get_height() / 2)))
-        window.blit(Fonts.standard.render(str(self.index + 1), False, Colors.black), (self.x + 40, self.y + self.height / 2 - self.scoreText.get_height() / 2))
+        window.blit(Fonts.standard.render(self.name, False, Colors.black), (self.x + 40, self.y + self.height / 2 - self.scoreText.get_height() / 2))

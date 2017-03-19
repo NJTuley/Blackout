@@ -12,6 +12,7 @@ class MainMenu(Menu):
     options = []  # list holding all menu options (buttons)
     options_txt = [
         "Start Game",
+        "How To Play",
         "Exit"
     ]
     title = Fonts.largeTitle.render("BLACKOUT", False, Colors.white)

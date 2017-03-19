@@ -14,9 +14,11 @@ import random
 from MainMenu import MainMenu
 from PauseMenu import PauseMenu
 from GameOverScreen import GameOverScreen
-from HighScoreDisplay import scores
+import HighScores
 from PulseAnimation import PulseAnimation
-from HighScoreDisplay import importScores
+from TextField import TextField
+from helpScreen import helpScreen
+
 
 class Application():
     pygame.mixer.set_num_channels(2)  # set the maximum number of channels of playback that are allowed for audio
@@ -58,9 +60,7 @@ class Application():
         # initialize game clock
         self.gameClock = pygame.time.Clock()
 
-        print("Tiles Wide default still used")
         self.tiles_wide = 3
-        print("Screen resolution default still used")
         self.screen = (800, 800)  # screen width, height
         # create the pygame window
         self.gameWindow = pygame.display.set_mode(self.screen)
@@ -98,6 +98,8 @@ class Application():
 
         self.song_num = random.randint(0, len(self.songs) - 1)
 
+        self.newHighScoreInput = TextField("New High Score, type your name and press enter!:", self.screen)
+
 
     def run(self):
         while(self.restart):
@@ -109,12 +111,10 @@ class Application():
                 # User is in the main menu
                 if(self.game_state == self.game_states['Main Menu']):
                     self.curr_song = self.songs[8]
-                    self.curr_song.play()
+                    self.curr_song.play(self.fps / 2)
 
                 while(self.game_state == self.game_states['Main Menu'] and not self.terminate):
                     self.fps = 30
-                    # stop playing the current song
-
                     # make the mouse visible to the player
                     pygame.mouse.set_visible(True)
 
@@ -134,6 +134,25 @@ class Application():
                                 self.prepNewGame()
                                 continue
                             elif(self.mainMenu.options[1].inBounds(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])):
+                                # user has clicked the How to play button
+                                help = helpScreen(self.screen)
+                                helping = True
+                                while(helping):
+                                    for event in pygame.event.get():
+                                        if(event.type == pygame.KEYDOWN):
+                                            if(event.key == pygame.K_ESCAPE):
+                                                helping = False
+                                        if(event.type == pygame.QUIT):
+                                            self.terminate = True
+                                            helping = False
+                                            self.restart = False
+                                        if(event.type == pygame.MOUSEBUTTONDOWN):
+                                            if(help.returnBtn.inBounds(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])):
+                                                helping = False
+
+                                    help.update(self.gameWindow)
+                                    pygame.display.update()
+                            elif(self.mainMenu.options[2].inBounds(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])):
                                 # user has clicked the exit game button
                                 self.endGame()
                                 continue
@@ -146,12 +165,37 @@ class Application():
                     pygame.display.update()
                 if(self.game_state == self.game_states['Game Over'] and not self.terminate):
                     self.curr_song.fadeout(100)
-                    importScores("Assets/highscores.txt")
+                    HighScores.importScores("Assets/highscores.txt")
 
                 while(self.game_state == self.game_states['Game Over'] and not self.terminate):
                     # player is seeing the game over screen
                     pygame.mouse.set_visible(True)
                     self.gameOverScreen.update(self.gameWindow, self.screen, self.gameplay_time)
+                    while(HighScores.newHighScore):
+                        for event in pygame.event.get():
+                            if(event.type == pygame.QUIT):
+                                terminate = True
+                                restart = False
+                                HighScores.newHighScore = False
+                                continue
+                            if(event.type == pygame.KEYDOWN):
+                                if(event.key == pygame.K_RETURN):
+                                    HighScores.newHighScore = False
+                                    if(self.newHighScoreInput.nameIn == "(3 characters maximum)"):
+                                        HighScores.newHighScoreInsert(self.gameplay_time, "NAN")
+                                    else:
+                                        HighScores.newHighScoreInsert(self.gameplay_time, self.newHighScoreInput.nameIn)
+                                if(event.key == pygame.K_ESCAPE):
+                                    HighScores.newHighScore = False
+                                if(event.key == pygame.K_BACKSPACE):
+                                    self.newHighScoreInput.nameIn = self.newHighScoreInput.nameIn[0:len(self.newHighScoreInput.nameIn) - 1]
+                                if(self.isAlphanumericKey(event)):
+                                    if(self.newHighScoreInput.nameIn == "(3 characters maximum)"):
+                                        self.newHighScoreInput.nameIn = self.getKeyVal(event).upper()
+                                    else:
+                                        self.newHighScoreInput.nameIn += self.getKeyVal(event).upper()
+                        self.newHighScoreInput.update(self.gameWindow)
+                        pygame.display.update()
 
                     # event handling in the game over screen
                     for event in pygame.event.get():
@@ -291,15 +335,16 @@ class Application():
                     # update all non-board and non-player elements on the screen during active game state
                     self.activeGameDisplay()
 
-                    # iterate tiles, increase speeds, etc. when the time is correct (as specified by the counter variable)
-                    if(self.counter % (int(self.fps * (self.secondsPerIdealGame / self.numTimesSpeedUp))) == 0 and self.counter != 0):
-                        # time to speed up the game
-                        if(self.framesPerRound > 5):
-                            self.framesPerRound -= self.frames_per_round_iter
-                            self.player.speed += self.player_speed_iter
                     if(self.counter % self.framesPerRound == 0 and self.counter != 0):
                         # game board needs to iterate its tiles to the next set
                         self.gameBoard.iterateTiles()
+
+                    # iterate tiles, increase speeds, etc. when the time is correct (as specified by the counter variable)
+                    if (self.counter % (int(self.fps * (self.secondsPerIdealGame / self.numTimesSpeedUp))) == 0 and self.counter != 0):
+                        # time to speed up the game
+                        if (self.framesPerRound > 5):
+                            self.framesPerRound -= self.frames_per_round_iter
+                            self.player.speed += self.player_speed_iter
 
                     self.gameClock.tick(self.fps)
                     self.boardPulseAnimation.iterate()
@@ -314,16 +359,11 @@ class Application():
                     if(self.player.status == 0):
                         self.game_state = self.game_states['Game Over']
                         # check if this player got a high score, and record it accordingly
-                        if(self.isHighScore(self.gameplay_time)):
-                            print("VICTORY")
+                        if(HighScores.isHighScore(self.gameplay_time)):
+                            HighScores.newHighScore = True
 
 
-
-
-
-
-
-    # function to handle reseting all required values and any other actions required when a new game session starts (the user just lost during their last game session)
+    # function to handle resetting all required values and any other actions required when a new game session starts (the user just lost during their last game session)
     def newGameSession(self):
         self.terminate = False
         self.restart = True
@@ -338,6 +378,8 @@ class Application():
         # reset the gameboard to a new board as the game starts
         self.gameBoard = Board(self.screen[0] * 0.8, self.screen[0] * 0.8, self.tiles_wide, self.tiles_wide, self.screen)
 
+        self.newHighScoreInput = TextField("New High Score, type your name and press enter!:", self.screen)
+
 
     def prepNewGame(self):
         self.game_state = self.game_states['Game Active']
@@ -347,7 +389,7 @@ class Application():
         self.resetStopWatch()
         self.counter = 0
         self.curr_song = self.songs[self.song_num]
-        self.curr_song.play()
+        self.curr_song.play(self.fps / 2)
 
         # reset the player position to the center of the first active tile on the board (the pure white tile)
         self.player.posX = self.gameBoard.activeTiles[numTilesAhead].positionX + (self.gameBoard.activeTiles[numTilesAhead].width / 2)
@@ -426,6 +468,10 @@ class Application():
         self.gameWindow.blit(restartTxt, (self.screen[0] * 0.95 - restartTxt.get_width(), self.screen[1] * 0.1 * 0.5 - (
         (pauseTxt.get_height() + restartTxt.get_height()) / 2) + pauseTxt.get_height()))
 
+        if(HighScores.isBestScore(self.gameplay_time)):
+            newScoretxt = Fonts.standard.render("YOU GOT A NEW BEST SCORE!!", False, Colors.white)
+            self.gameWindow.blit(newScoretxt, (self.screen[0] * 0.52 - newScoretxt.get_width() * 0.5, self.screen[1] * 0.1 * 0.5 - newScoretxt.get_height() * 0.5))
+
 
     def displayTimeActiveGame(self):
         minutes = ""
@@ -446,37 +492,28 @@ class Application():
 
         gameStopWatchDisplay = Fonts.large.render(str(minutes + ":" + seconds + ":" + milliseconds), False, Colors.white)
         self.gameWindow.blit(gameStopWatchDisplay,
-                        (self.screen[0] * 0.075, self.screen[1] * 0.1 * 0.5 - (gameStopWatchDisplay.get_height() / 2)))
+                        (self.screen[0] * 0.05, self.screen[1] * 0.1 * 0.5 - (gameStopWatchDisplay.get_height() / 2)))
 
-    # check if the time from the last game was a new record
-    def isHighScore(self, time):
-        for i in range(len(scores)):
-            if(time['minutes'] > scores[i][0]
-               or (time['minutes'] == scores[i][0] and time['seconds'] > scores[i][1])
-               or time['minutes'] == scores[i][0] and time['seconds'] == scores[i][1] and time['milliseconds'] > scores[i][2]):
-                self.insertNewHighScore(time, i)
-                self.exportScoresToFile()
+
+    #check if the given key pressed is a letter or number
+    def isAlphanumericKey(self, event):
+        for key in pygame_keycodes_alpha:
+            if(event.key == pygame_keycodes_alpha[key]):
                 return True
-
         return False
 
-    # exports the high score data to a file in order to save data between gameplay sessions
-    def exportScoresToFile(self):
-        outFile = open("Assets/highscores.txt", 'w')
+    #get the character value of a key pressed
+    def getKeyVal(self, event):
+        for key in pygame_keycodes_alpha:
+            if(event.key == pygame_keycodes_alpha[key]):
+                return key
+        return ' '
 
-        for i in range(len(scores)):
-            outFile.write(str(scores[i][0]) + " " + str(scores[i][1]) + " " + str(scores[i][2]))
-            if(i != len(scores) - 1):
-                outFile.write('\n')
 
-        outFile.close()
-
-    # insert a new high schore into the last at the specified index, pushing everything below the index down one space in the list (i.e. if index was 5, the item at index 3 would be pushed to index 4), shifting everything below the index down in the list
-    def insertNewHighScore(self, time, index):
-        for i in range(len(scores) - index):
-            scores[len(scores) - i - 1][0] = scores[len(scores) - i - 2][0]
-            scores[len(scores) - i - 1][1] = scores[len(scores) - i - 2][1]
-            scores[len(scores) - i - 1][2] = scores[len(scores) - i - 2][2]
-        scores[index][0] = time['minutes']
-        scores[index][1] = time['seconds']
-        scores[index][2] = int(time['milliseconds'] / 10)
+# all alphanumeric keycodes in pygame
+pygame_keycodes_alpha = {
+    '0': pygame.K_0, '1': pygame.K_1, '2': pygame.K_2, '3': pygame.K_3, '4': pygame.K_4, '5': pygame.K_5, '6': pygame.K_6, '7': pygame.K_7, '8': pygame.K_8,
+    '9': pygame.K_9, 'a': pygame.K_a, 'b': pygame.K_b, 'c': pygame.K_c, 'd': pygame.K_d, 'e': pygame.K_e, 'f': pygame.K_f, 'g': pygame.K_g, 'h': pygame.K_h,
+    'i': pygame.K_i, 'j': pygame.K_j, 'k': pygame.K_k, 'l': pygame.K_l, 'm': pygame.K_m, 'n': pygame.K_n, 'o': pygame.K_o, 'p': pygame.K_p, 'q': pygame.K_q,
+    'r': pygame.K_r, 's': pygame.K_s, 't': pygame.K_t, 'u': pygame.K_u, 'v': pygame.K_v, 'w': pygame.K_w, 'x': pygame.K_x, 'y': pygame.K_y, 'z': pygame.K_z
+}
