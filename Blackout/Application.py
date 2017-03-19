@@ -139,9 +139,6 @@ class Application():
                                 helping = True
                                 while(helping):
                                     for event in pygame.event.get():
-                                        if(event.type == pygame.KEYDOWN):
-                                            if(event.key == pygame.K_ESCAPE):
-                                                helping = False
                                         if(event.type == pygame.QUIT):
                                             self.terminate = True
                                             helping = False
@@ -149,7 +146,6 @@ class Application():
                                         if(event.type == pygame.MOUSEBUTTONDOWN):
                                             if(help.returnBtn.inBounds(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])):
                                                 helping = False
-
                                     help.update(self.gameWindow)
                                     pygame.display.update()
                             elif(self.mainMenu.options[2].inBounds(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])):
