@@ -135,6 +135,7 @@ class Application():
                                 continue
                             elif(self.mainMenu.options[1].inBounds(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])):
                                 # user has clicked the How to play button
+                                self.fps = 30
                                 help = helpScreen(self.screen)
                                 helping = True
                                 while(helping):
@@ -148,6 +149,7 @@ class Application():
                                                 helping = False
                                     help.update(self.gameWindow)
                                     pygame.display.update()
+                                    self.gameClock.tick(self.fps)
                             elif(self.mainMenu.options[2].inBounds(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])):
                                 # user has clicked the exit game button
                                 self.endGame()
