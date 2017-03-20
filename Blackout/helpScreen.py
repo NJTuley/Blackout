@@ -8,7 +8,7 @@ from PulseAnimation import PulseAnimation
 
 class helpScreen():
     text = ["OBJECTIVE:",
-            "Do not be \"standing\" on a black tile",
+            "Do not touch any black tiles",
             "as the tiles move around the board.",
             "",
            "-Use the mouse to move",

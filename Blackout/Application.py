@@ -46,12 +46,12 @@ class Application():
     }
 
     def_fps = 60  # the default value for frames per second that the game will run at
-    def_frames_per_round = 15  # the default value for the number of frames per "round" (a round is the period of time between each tile iteration on the game board)
+    def_frames_per_round = 20  # the default value for the number of frames per "round" (a round is the period of time between each tile iteration on the game board)
     def_frames_per_round_iter = 1  # the default value for how much to decrement the tiles_per_round value each time the game speeds up
     def_player_speed_iter = 2  # the default value for the player's speed
 
     secondsPerIdealGame = 120  # the number of seconds that a player should be able to survive for (if this game had a win condition, it would be upon reaching this point)
-    numTimesSpeedUp = 11  # the number of times that the game will speed up before it reaches the maximum speed
+    numTimesSpeedUp = 16  # the number of times that the game will speed up before it reaches the maximum speed
 
     def __init__(self):
         self.frames_per_round_iter = self.def_frames_per_round_iter  # how often to speed up the game
@@ -375,6 +375,9 @@ class Application():
 
         # reset the gameboard to a new board as the game starts
         self.gameBoard = Board(self.screen[0] * 0.8, self.screen[0] * 0.8, self.tiles_wide, self.tiles_wide, self.screen)
+
+        # move the player mouse to the center of the player object for ease of play at start of game
+        pygame.mouse.set_pos(self.player.posX, self.player.posY)
 
         self.newHighScoreInput = TextField("New High Score, type your name and press enter!:", self.screen)
 
