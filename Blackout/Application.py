@@ -60,9 +60,10 @@ class Application():
         # initialize game clock
         self.gameClock = pygame.time.Clock()
 
+        # how many tiles are shown on the screen as a grid (this number is the number of tiles per side of the grid, aka 3 means the grid is 3x3)
         self.tiles_wide = 3
         self.screen = (800, 800)  # screen width, height
-        # create the pygame window
+        # create the pygame window and set the window caption
         self.gameWindow = pygame.display.set_mode(self.screen)
         pygame.display.set_caption("BLACKOUT")
 
@@ -96,8 +97,9 @@ class Application():
         self.gameOverScreen = GameOverScreen(self.screen)
         self.pauseMenu = PauseMenu(self.screen[0], self.screen[1])
 
+        # the index of the song to be played by the system
         self.song_num = random.randint(0, len(self.songs) - 1)
-
+        # text field to gather new text input from the user that will be the 3 character long name associated with a new high score
         self.newHighScoreInput = TextField("New High Score, type your name and press enter!:", self.screen)
 
 
@@ -105,7 +107,9 @@ class Application():
         while(self.restart):
             self.terminate = False
             while(not self.terminate):
+                # counter variable to track the number of frames passed during game execution
                 self.counter = 0
+                # the number of frames that pass between each tile iteration
                 self.framesPerRound = self.def_frames_per_round
 
                 # User is in the main menu
@@ -274,6 +278,9 @@ class Application():
 
                     self.iterateTime()
 
+                    if(self.gameClock.get_fps() < 20):
+                        print(self.gameClock.get_fps())
+
                     # event handling for active gameplay
                     for event in pygame.event.get():
                         if(event.type == pygame.QUIT):
@@ -395,6 +402,7 @@ class Application():
         # reset the player position to the center of the first active tile on the board (the pure white tile)
         self.player.posX = self.gameBoard.activeTiles[numTilesAhead].positionX + (self.gameBoard.activeTiles[numTilesAhead].width / 2)
         self.player.posY = self.gameBoard.activeTiles[numTilesAhead].positionY + (self.gameBoard.activeTiles[numTilesAhead].height / 2)
+        self.player.speed = 15
 
         # move the player mouse to the center of the player object for ease of play at start of game
         pygame.mouse.set_pos(self.player.posX, self.player.posY)

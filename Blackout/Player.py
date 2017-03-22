@@ -3,7 +3,7 @@ import math
 import pygame
 
 defRadius = 30 #defualt player sprite radius
-defSpeed = 13
+defSpeed = 15
 
 # the possible statuses of the player
 playerStatus = [

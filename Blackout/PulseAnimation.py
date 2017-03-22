@@ -1,5 +1,3 @@
-# min-max-looping type animation
-
 from Animation import shapes
 from Animation import types
 from Animation import Animation

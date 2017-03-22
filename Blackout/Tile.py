@@ -127,7 +127,7 @@ class Tile():
         else:  # transitioning to empty or empty itself
             self.fillColor = tileSafeColors[int(self.value) - 1]
 
-        self.borderColor = black
+        self.borderColor = self.fillColor
 
 
     def setValue(self, value):
