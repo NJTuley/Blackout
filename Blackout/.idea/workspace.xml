@@ -11,7 +11,7 @@
   </component>
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/Blackout$BLARJLKDJFDS.coverage" NAME="BLARJLKDJFDS Coverage Results" MODIFIED="1490046366542" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/Blackout$Blackout__1_.coverage" NAME="Blackout (1) Coverage Results" MODIFIED="1490205017810" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Blackout$Blackout__1_.coverage" NAME="Blackout (1) Coverage Results" MODIFIED="1490208668284" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Blackout$Blackout.coverage" NAME="Blackout Coverage Results" MODIFIED="1488974191808" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Blackout$Application.coverage" NAME="Application Coverage Results" MODIFIED="1490047631023" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Blackout$pyinstaller.coverage" NAME="pyinstaller Coverage Results" MODIFIED="1490046381114" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../../../PyInstaller-3.2.1" />
@@ -22,11 +22,11 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="Application.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Application.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Application.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="621">
-              <caret line="330" column="20" lean-forward="false" selection-start-line="330" selection-start-column="20" selection-end-line="330" selection-end-column="20" />
+            <state relative-caret-position="-398">
+              <caret line="64" column="27" lean-forward="false" selection-start-line="64" selection-start-column="27" selection-end-line="64" selection-end-column="27" />
               <folding />
             </state>
           </provider>
@@ -35,7 +35,7 @@
       <file leaf-file-name="Board.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Board.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1854">
+            <state relative-caret-position="1044">
               <caret line="110" column="90" lean-forward="false" selection-start-line="110" selection-start-column="90" selection-end-line="110" selection-end-column="90" />
               <folding />
             </state>
@@ -45,8 +45,8 @@
       <file leaf-file-name="Player.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Player.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="180">
-              <caret line="26" column="51" lean-forward="false" selection-start-line="26" selection-start-column="40" selection-end-line="26" selection-end-column="51" />
+            <state relative-caret-position="158">
+              <caret line="19" column="28" lean-forward="true" selection-start-line="19" selection-start-column="28" selection-end-line="19" selection-end-column="28" />
               <folding>
                 <element signature="e#1#12#0" expanded="true" />
               </folding>
@@ -54,7 +54,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Tile.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Tile.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Tile.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="180">
@@ -137,10 +137,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>10</find>
-      <find>Music/</find>
-      <find>game_states['Ani</find>
-      <find>connected</find>
       <find>song.play</find>
       <find>500</find>
       <find>importScores</find>
@@ -167,6 +163,10 @@
       <find>Fonts.large</find>
       <find>Tiles Wide default</find>
       <find>Tiles_wide</find>
+      <find>speed =</find>
+      <find>speed =</find>
+      <find>gameBoard =</find>
+      <find>tiles_wide</find>
     </findStrings>
   </component>
   <component name="IdeDocumentHistory">
@@ -202,9 +202,9 @@
         <option value="$PROJECT_DIR$/BLARJLKDJFDS.py" />
         <option value="$PROJECT_DIR$/PulseAnimation.py" />
         <option value="$PROJECT_DIR$/Blackout.py" />
-        <option value="$PROJECT_DIR$/Application.py" />
         <option value="$PROJECT_DIR$/Player.py" />
         <option value="$PROJECT_DIR$/Tile.py" />
+        <option value="$PROJECT_DIR$/Application.py" />
       </list>
     </option>
   </component>
@@ -943,14 +943,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Board.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1854">
-          <caret line="110" column="90" lean-forward="false" selection-start-line="110" selection-start-column="90" selection-end-line="110" selection-end-column="90" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Blackout.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="18">
@@ -961,28 +953,36 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Application.py">
+    <entry file="file://$PROJECT_DIR$/Tile.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="621">
-          <caret line="330" column="20" lean-forward="false" selection-start-line="330" selection-start-column="20" selection-end-line="330" selection-end-column="20" />
+        <state relative-caret-position="180">
+          <caret line="131" column="0" lean-forward="true" selection-start-line="131" selection-start-column="0" selection-end-line="131" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Board.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1044">
+          <caret line="110" column="90" lean-forward="false" selection-start-line="110" selection-start-column="90" selection-end-line="110" selection-end-column="90" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Player.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="26" column="51" lean-forward="false" selection-start-line="26" selection-start-column="40" selection-end-line="26" selection-end-column="51" />
+        <state relative-caret-position="158">
+          <caret line="19" column="28" lean-forward="true" selection-start-line="19" selection-start-column="28" selection-end-line="19" selection-end-column="28" />
           <folding>
             <element signature="e#1#12#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Tile.py">
+    <entry file="file://$PROJECT_DIR$/Application.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="131" column="0" lean-forward="true" selection-start-line="131" selection-start-column="0" selection-end-line="131" selection-end-column="0" />
+        <state relative-caret-position="-398">
+          <caret line="64" column="27" lean-forward="false" selection-start-line="64" selection-start-column="27" selection-end-line="64" selection-end-column="27" />
           <folding />
         </state>
       </provider>

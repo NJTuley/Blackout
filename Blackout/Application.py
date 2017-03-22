@@ -5,6 +5,7 @@ import pygame
 pygame.init()
 
 from Player import Player
+from Player import defSpeed
 from Song import Song
 import Colors
 import Fonts
@@ -79,7 +80,7 @@ class Application():
         # set up the game board
         self.gameBoard = Board(self.screen[0] * 0.8, self.screen[0] * 0.8, self.tiles_wide, self.tiles_wide, self.screen)
         # set up the player object
-        self.player = Player(self.gameBoard.activeTiles[numTilesAhead].positionX + (self.gameBoard.activeTiles[numTilesAhead].width / 2), self.gameBoard.activeTiles[numTilesAhead].positionY + (self.gameBoard.activeTiles[numTilesAhead].height / 2))
+        self.player = Player(self.gameBoard.activeTiles[numTilesAhead].positionX + (self.gameBoard.activeTiles[numTilesAhead].width / 2), self.gameBoard.activeTiles[numTilesAhead].positionY + (self.gameBoard.activeTiles[numTilesAhead].height / 2), int(self.gameBoard.tileHeight * 0.2))
         # center the player's mouse over the player object (a circle on the screen)
         pygame.mouse.set_pos(self.player.posX, self.player.posY)
 
@@ -383,6 +384,12 @@ class Application():
         # reset the gameboard to a new board as the game starts
         self.gameBoard = Board(self.screen[0] * 0.8, self.screen[0] * 0.8, self.tiles_wide, self.tiles_wide, self.screen)
 
+        #reset the player object
+        self.player = Player(
+            self.gameBoard.activeTiles[numTilesAhead].positionX + (self.gameBoard.activeTiles[numTilesAhead].width / 2),
+            self.gameBoard.activeTiles[numTilesAhead].positionY + (
+            self.gameBoard.activeTiles[numTilesAhead].height / 2), int(self.gameBoard.tileHeight * 0.2))
+
         # move the player mouse to the center of the player object for ease of play at start of game
         pygame.mouse.set_pos(self.player.posX, self.player.posY)
 
@@ -402,7 +409,7 @@ class Application():
         # reset the player position to the center of the first active tile on the board (the pure white tile)
         self.player.posX = self.gameBoard.activeTiles[numTilesAhead].positionX + (self.gameBoard.activeTiles[numTilesAhead].width / 2)
         self.player.posY = self.gameBoard.activeTiles[numTilesAhead].positionY + (self.gameBoard.activeTiles[numTilesAhead].height / 2)
-        self.player.speed = 15
+        self.player.speed = defSpeed
 
         # move the player mouse to the center of the player object for ease of play at start of game
         pygame.mouse.set_pos(self.player.posX, self.player.posY)
