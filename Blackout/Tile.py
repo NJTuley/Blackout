@@ -8,15 +8,9 @@ tileStatusDecrement = 255/ (60 * 3)
 white = (255, 255, 255)
 black = (0, 0, 0)
 
-numTilesAhead = 3 # the number of tiles ahead of current round that the game shows to player (see rules for explanation of game mechanics)
-
 fullTileColor = black
 emptyTileColor = white
-tileSafeColors = []
 
-for i in range(numTilesAhead):
-    colorNum = ((255 / (numTilesAhead + 1)) * (i + 1))
-    tileSafeColors.append((255 - colorNum, 255 - colorNum, 255 - colorNum))
 
 
 # function that will generate the list to pass into Tile contstructor for new tiles
@@ -26,7 +20,7 @@ for i in range(numTilesAhead):
 # @param width The width of the new tile
 # @param row The row in the board grid the tile will be placed in
 # @param column The column in the board grid the tile will be placed in
-def newTileParamGenerator(value, x, y, height, width, row, column, borderWidth = 1):
+def newTileParamGenerator(tiles_wide, value, x, y, height, width, row, column, borderWidth = 1):
     # parameter list to send to constructor for new Tile object
     param_list = {
         'value': value,
@@ -36,7 +30,8 @@ def newTileParamGenerator(value, x, y, height, width, row, column, borderWidth =
         'width': width,
         'row': row,
         'col': column,
-        'borderWidth': borderWidth
+        'borderWidth': borderWidth,
+        'tiles_wide' : tiles_wide
     }
 
     # send the populated parameter list to create a new tile with the specified parameters and return this Tile
@@ -44,10 +39,11 @@ def newTileParamGenerator(value, x, y, height, width, row, column, borderWidth =
 
 
 # function that will generate the list to pass into Tile constructor for a tile that is a copy of an existing tile
-def copyTileParameterGenerator(tile):
+def copyTileParameterGenerator(tiles_wide, tile):
     # parameter list to send to constructor for copied Tile objects
     param_list = {
-        'tile': tile
+        'tile': tile,
+        'tiles_wide' : tiles_wide
     }
 
     return Tile(True, param_list)
@@ -74,6 +70,7 @@ class Tile():
     """
 
     def __init__(self, copied, args):
+        self.tileSafeColors = []
         if(not copied):  # make a new Tile
             self.value = args['value']
             self.positionX = args['x']
@@ -107,15 +104,18 @@ class Tile():
                 self.width = args['tile'].width
             else:
                 raise Error("InvalidInput", "(Attempted to copy tile) Cannot create Tile with negative width")
-
+        self.numTilesAhead = args['tiles_wide']
+        for i in range(self.numTilesAhead):
+            colorNum = ((255 / (self.numTilesAhead + 1)) * (i + 1))
+            self.tileSafeColors.append((255 - colorNum, 255 - colorNum, 255 - colorNum))
         self.setColor()  # update tile color based on status
         self.status = 255.0  # set the status of this tile
         super().__init__()
 
 
     # reset the game board to its initial state
-    def reset(self):
-        self.__init__(self, newTileParamGenerator(self.value, self.positionX, self.positionY, self.height, self.width, self.row, self.column))
+    #def reset(self):
+       # self.__init__(self, newTileParamGenerator(self.numTilesAhead, self.value, self.positionX, self.positionY, self.height, self.width, self.row, self.column))
 
 
     #set tile color based on tile value
@@ -125,7 +125,7 @@ class Tile():
         elif(self.value == '0'):  # empty tile
             self.fillColor = white
         else:  # transitioning to empty or empty itself
-            self.fillColor = tileSafeColors[int(self.value) - 1]
+            self.fillColor = self.tileSafeColors[int(self.value) - 1]
 
         self.borderColor = self.fillColor
 

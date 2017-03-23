@@ -11,7 +11,6 @@ import pygame
 class MainMenu(Menu):
     options = []  # list holding all menu options (buttons)
     options_txt = [
-        "Start Game",
         "How To Play",
         "Exit"
     ]
@@ -30,9 +29,20 @@ class MainMenu(Menu):
 
         self.titleAnimationCreated = False
 
-        for i in range(len(self.options_txt)):
-            self.options.append(Button(buttonHeight, buttonWidth, buttonX, buttonStartY + buttonYOffset * i, self.options_txt[i], (255, 255, 255), Fonts.standard, (0, 0, 0)))
 
+        # add the difficulty buttons
+        self.options.append(
+            Button(buttonHeight, buttonWidth, buttonX - buttonWidth - 20, buttonStartY, "Easy", Colors.white,
+                   Fonts.standard, Colors.black))
+        self.options.append(
+            Button(buttonHeight, buttonWidth, buttonX, buttonStartY, "Moderate", Colors.white, Fonts.standard,
+                   Colors.black))
+        self.options.append(
+            Button(buttonHeight, buttonWidth, buttonX + buttonWidth + 20, buttonStartY, "Hard", Colors.white,
+                   Fonts.standard, Colors.black))
+        # add other buttons for main menu
+        for i in range(len(self.options_txt)):
+            self.options.append(Button(buttonHeight, buttonWidth, buttonX, buttonStartY + buttonYOffset * (i + 1), self.options_txt[i], (255, 255, 255), Fonts.standard, (0, 0, 0)))
 
     # starts the animation for the main menu title
     def startTitleAnimation(self, window):

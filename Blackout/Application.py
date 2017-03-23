@@ -10,7 +10,6 @@ from Song import Song
 import Colors
 import Fonts
 from Board import Board
-from Board import numTilesAhead
 import random
 from MainMenu import MainMenu
 from PauseMenu import PauseMenu
@@ -19,9 +18,11 @@ import HighScores
 from PulseAnimation import PulseAnimation
 from TextField import TextField
 from helpScreen import helpScreen
+from Difficulty import difficulties
 
 
 class Application():
+
     pygame.mixer.set_num_channels(2)  # set the maximum number of channels of playback that are allowed for audio
     songPlayback = pygame.mixer.Channel(0)  # the channel that will play the background music for the game during play
 
@@ -52,23 +53,29 @@ class Application():
     def_player_speed_iter = 2  # the default value for the player's speed
 
     secondsPerIdealGame = 120  # the number of seconds that a player should be able to survive for (if this game had a win condition, it would be upon reaching this point)
-    numTimesSpeedUp = 16  # the number of times that the game will speed up before it reaches the maximum speed
+
+
+    num_active_tiles = 4
 
     def __init__(self):
-        self.frames_per_round_iter = self.def_frames_per_round_iter  # how often to speed up the game
+
+        self.difficulty_level = difficulties[0]
+        self.numTimesSpeedUp = self.difficulty_level.max_fpr - self.difficulty_level.min_fpr  # the number of times that the game will speed up before it reaches the maximum speed
+        self.framesPerRound = self.difficulty_level.max_fpr
+        self.frames_per_round_iter = 1 # how often to speed up the game
         self.player_speed_iter = self.def_player_speed_iter  # how much to increase the speed of the player when the game speeds up
 
         # initialize game clock
         self.gameClock = pygame.time.Clock()
 
         # how many tiles are shown on the screen as a grid (this number is the number of tiles per side of the grid, aka 3 means the grid is 3x3)
-        self.tiles_wide = 3
+        self.tiles_wide = self.difficulty_level.tiles_wide
         self.screen = (800, 800)  # screen width, height
         # create the pygame window and set the window caption
         self.gameWindow = pygame.display.set_mode(self.screen)
         pygame.display.set_caption("BLACKOUT")
 
-        self.restart = True  # whether or not this game session has ended (if it does it returns you to main menu or game over screen)
+        self.restart = True  # whether or not this game session has ended (if True it returns you to main menu or game over screen)
         self.terminate = False  # whether or not to restart a new game
         # initialize starter values
         self.game_state = self.game_states['Main Menu']
@@ -80,7 +87,7 @@ class Application():
         # set up the game board
         self.gameBoard = Board(self.screen[0] * 0.8, self.screen[0] * 0.8, self.tiles_wide, self.tiles_wide, self.screen)
         # set up the player object
-        self.player = Player(self.gameBoard.activeTiles[numTilesAhead].positionX + (self.gameBoard.activeTiles[numTilesAhead].width / 2), self.gameBoard.activeTiles[numTilesAhead].positionY + (self.gameBoard.activeTiles[numTilesAhead].height / 2), int(self.gameBoard.tileHeight * 0.2))
+        self.player = Player(self.gameBoard.activeTiles[self.difficulty_level.tiles_wide - 1 - 1].positionX + (self.gameBoard.activeTiles[self.difficulty_level.tiles_wide - 1 - 1].width / 2), self.gameBoard.activeTiles[self.difficulty_level.tiles_wide - 1 - 1].positionY + (self.gameBoard.activeTiles[self.difficulty_level.tiles_wide - 1 - 1].height / 2), int(self.gameBoard.tileHeight * 0.2))
         # center the player's mouse over the player object (a circle on the screen)
         pygame.mouse.set_pos(self.player.posX, self.player.posY)
 
@@ -111,7 +118,7 @@ class Application():
                 # counter variable to track the number of frames passed during game execution
                 self.counter = 0
                 # the number of frames that pass between each tile iteration
-                self.framesPerRound = self.def_frames_per_round
+                self.framesPerRound = self.difficulty_level.max_fpr
 
                 # User is in the main menu
                 if(self.game_state == self.game_states['Main Menu']):
@@ -136,9 +143,20 @@ class Application():
                         if(event.type == pygame.MOUSEBUTTONDOWN):
                             if(self.mainMenu.options[0].inBounds(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])):
                                 # user has clicked on the start game button
+                                self.difficulty_level = difficulties[0]
                                 self.prepNewGame()
                                 continue
-                            elif(self.mainMenu.options[1].inBounds(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])):
+                            if (self.mainMenu.options[1].inBounds(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])):
+                                # user has clicked on the start game button
+                                self.difficulty_level = difficulties[1]
+                                self.prepNewGame()
+                                continue
+                            if (self.mainMenu.options[2].inBounds(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])):
+                                # user has clicked on the start game button
+                                self.difficulty_level = difficulties[2]
+                                self.prepNewGame()
+                                continue
+                            elif(self.mainMenu.options[3].inBounds(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])):
                                 # user has clicked the How to play button
                                 self.fps = 30
                                 help = helpScreen(self.screen)
@@ -155,7 +173,7 @@ class Application():
                                     help.update(self.gameWindow)
                                     pygame.display.update()
                                     self.gameClock.tick(self.fps)
-                            elif(self.mainMenu.options[2].inBounds(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])):
+                            elif(self.mainMenu.options[4].inBounds(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])):
                                 # user has clicked the exit game button
                                 self.endGame()
                                 continue
@@ -329,11 +347,11 @@ class Application():
 
                     self. collisions = self.player.getTileCollisions(self.gameBoard.tiles)
 
-                    for tile in self.collisions:
+                    """for tile in self.collisions:
                         if(tile.value == 'x'):
                             self.player.status = 0
                             terminate = True
-                            restart = True
+                            restart = True"""
 
                     self.gameWindow.fill((10, 10, 10))
                     self.gameWindow.fill(Colors.black, pygame.Rect((0,0), (self.screen[0], self.screen[1] * 0.1)))
@@ -348,7 +366,7 @@ class Application():
                     # iterate tiles, increase speeds, etc. when the time is correct (as specified by the counter variable)
                     if (self.counter % (int(self.fps * (self.secondsPerIdealGame / self.numTimesSpeedUp))) == 0 and self.counter != 0):
                         # time to speed up the game
-                        if (self.framesPerRound > 5):
+                        if (self.framesPerRound > self.difficulty_level.min_fpr):
                             self.framesPerRound -= self.frames_per_round_iter
                             self.player.speed += self.player_speed_iter
 
@@ -381,17 +399,7 @@ class Application():
         # reset the game counter (keeps track of what to do when by modulus operation)
         self.counter = 0
 
-        # reset the gameboard to a new board as the game starts
-        self.gameBoard = Board(self.screen[0] * 0.8, self.screen[0] * 0.8, self.tiles_wide, self.tiles_wide, self.screen)
 
-        #reset the player object
-        self.player = Player(
-            self.gameBoard.activeTiles[numTilesAhead].positionX + (self.gameBoard.activeTiles[numTilesAhead].width / 2),
-            self.gameBoard.activeTiles[numTilesAhead].positionY + (
-            self.gameBoard.activeTiles[numTilesAhead].height / 2), int(self.gameBoard.tileHeight * 0.2))
-
-        # move the player mouse to the center of the player object for ease of play at start of game
-        pygame.mouse.set_pos(self.player.posX, self.player.posY)
 
         self.newHighScoreInput = TextField("New High Score, type your name and press enter!:", self.screen)
 
@@ -406,10 +414,29 @@ class Application():
         self.curr_song = self.songs[self.song_num]
         self.curr_song.play(self.fps / 2)
 
+        self.numTimesSpeedUp = self.difficulty_level.max_fpr - self.difficulty_level.min_fpr  # the number of times that the game will speed up before it reaches the maximum speed
+
+        # reset the gameboard to a new board as the game starts
+        self.gameBoard = Board(self.screen[0] * 0.8, self.screen[0] * 0.8, self.difficulty_level.tiles_wide, self.difficulty_level.tiles_wide, self.screen)
+
+        self.framesPerRound = self.difficulty_level.max_fpr
+
+        #reset the player object
+        self.player = Player(
+            self.gameBoard.activeTiles[self.num_active_tiles - 1].positionX + (self.gameBoard.activeTiles[self.num_active_tiles - 1].width / 2),
+            self.gameBoard.activeTiles[self.num_active_tiles - 1].positionY + (
+            self.gameBoard.activeTiles[self.num_active_tiles - 1].height / 2), int(self.gameBoard.tileHeight * 0.2))
+
+
+
         # reset the player position to the center of the first active tile on the board (the pure white tile)
-        self.player.posX = self.gameBoard.activeTiles[numTilesAhead].positionX + (self.gameBoard.activeTiles[numTilesAhead].width / 2)
-        self.player.posY = self.gameBoard.activeTiles[numTilesAhead].positionY + (self.gameBoard.activeTiles[numTilesAhead].height / 2)
+        self.player.posX = self.gameBoard.activeTiles[self.num_active_tiles - 1].positionX + (self.gameBoard.activeTiles[self.num_active_tiles - 1].width / 2)
+        self.player.posY = self.gameBoard.activeTiles[self.num_active_tiles - 1].positionY + (self.gameBoard.activeTiles[self.num_active_tiles - 1].height / 2)
         self.player.speed = defSpeed
+
+
+        # move the player mouse to the center of the player object for ease of play at start of game
+        pygame.mouse.set_pos(self.player.posX, self.player.posY)
 
         # move the player mouse to the center of the player object for ease of play at start of game
         pygame.mouse.set_pos(self.player.posX, self.player.posY)

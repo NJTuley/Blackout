@@ -1,6 +1,5 @@
 import random
 import pygame
-from Tile import numTilesAhead
 from Error import Error
 from Tile import white
 from Tile import black
@@ -27,7 +26,8 @@ class Board():
     def __init__(self, height, width, tilesWide, tilesHigh, screen):
         try:
             self.tiles = []
-            self.numActiveTiles = numTilesAhead + 1
+            self.tiles_wide = tilesWide
+            self.numActiveTiles = 4 #self.tiles_wide + 1
             self.activeTiles = []
             self.setHeight(height)
             self.setWidth(width)
@@ -77,9 +77,9 @@ class Board():
                 self.tiles.append([])
                 for tile in range(tilesWide):
                     if(tile == int(tilesWide / 2) and row == int(tilesHigh / 2)): #initialize center tile to empty
-                        self.tiles[row].append(newTileParamGenerator('0', tile * self.tileWidth + self.x, row * self.tileHeight + self.y, self.tileHeight, self.tileWidth, row, tile))
+                        self.tiles[row].append(newTileParamGenerator(self.numActiveTiles, '0', tile * self.tileWidth + self.x, row * self.tileHeight + self.y, self.tileHeight, self.tileWidth, row, tile))
                     else: #initialize all other tiles to full
-                        self.tiles[row].append(newTileParamGenerator('x', tile * self.tileWidth + self.x, row * self.tileHeight + self.y, self.tileHeight, self.tileWidth, row, tile))
+                        self.tiles[row].append(newTileParamGenerator(self.numActiveTiles, 'x', tile * self.tileWidth + self.x, row * self.tileHeight + self.y, self.tileHeight, self.tileWidth, row, tile))
 
             self.iterateTiles()
 
@@ -97,11 +97,11 @@ class Board():
     def iterateTiles(self):
         self.resetTiles()
         #check if there are tiles already active
-        if(len(self.activeTiles) == numTilesAhead + 1):
-            for i in range(numTilesAhead + 1):
-                if(not i == numTilesAhead):
+        if(len(self.activeTiles) == self.numActiveTiles):
+            for i in range(self.numActiveTiles - 1):
+                if(not i == self.numActiveTiles):
                     self.activeTiles[i] = self.activeTiles[i + 1]
-                    self.activeTiles[i].value = str(numTilesAhead - i)
+                    self.activeTiles[i].value = str(self.numActiveTiles - i)
             # generate what the new tile will be for this iteration, and put it at the end of the active tiles list
             self.activeTiles[len(self.activeTiles) - 1] = self.setNextTile(self.activeTiles[len(self.activeTiles) - 2])
             self.activeTiles[len(self.activeTiles) - 1].value = str(0)
@@ -113,14 +113,16 @@ class Board():
         else:
 
             tempTile = self.tiles[int(len(self.tiles) / 2)][int(len(self.tiles[0]) / 2)]
-            for i in range(numTilesAhead + 1):
+            for i in range(self.numActiveTiles - 1):
                 # set the 4 tiles to be open after the current one (the center tile at initialization)
-                tempTile.value = str(numTilesAhead - i)
+                tempTile.value = str(self.numActiveTiles - i)
                 self.activeTiles.append(tempTile)
                 tempTile = self.setNextTile(tempTile)
+            tempTile.value = '0'
+            self.activeTiles.append(tempTile)
 
         # loop through the list of active tiles and make sure they all have the correct value
-        for i in range(len(self.activeTiles)):
+        for i in range(len(self.activeTiles) - 1):
             self.activeTiles[i].values = str(len(self.activeTiles) - (i + 1))
             self.activeTiles[i].setColor()
             if(self.activeTiles[i].fillColor == black):
@@ -129,7 +131,11 @@ class Board():
         if self.numActiveTiles == len(self.activeTiles):
             self.numActiveTiles = len(self.activeTiles)
         else:
+            print("Error", self.numActiveTiles, len(self.activeTiles))
             raise Exception("Error: Active Tile Count Mismatch")
+
+        for tile in self.activeTiles:
+            print(tile.value)
 
 
 
@@ -150,9 +156,9 @@ class Board():
             #the program has cornered itself, time to just push through one of the other active tiles that is a direct (4-directional) neighbor of the current tile
             for i in range(len(self.activeTiles)):
                 if(currTile.row == self.activeTiles[i].row and (currTile.column == self.activeTiles[i].column - 1 or currTile.column == self.activeTiles[i].column + 1)):
-                    return copyTileParameterGenerator(self.activeTiles[i])
+                    return copyTileParameterGenerator(self.tiles_wide, self.activeTiles[i])
                 elif(currTile.column == self.activeTiles[i].column and (currTile.row == self.activeTiles[i].row - 1 or currTile.row == self.activeTiles[i].row + 1)):
-                    return copyTileParameterGenerator(self.activeTiles[i])
+                    return copyTileParameterGenerator(self.tiles_wide, self.activeTiles[i])
 
             raise Exception("Did not find a active tile that directly neighbored the current tile that is cornered.")
 
