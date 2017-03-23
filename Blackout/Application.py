@@ -347,11 +347,11 @@ class Application():
 
                     self. collisions = self.player.getTileCollisions(self.gameBoard.tiles)
 
-                    """for tile in self.collisions:
+                    for tile in self.collisions:
                         if(tile.value == 'x'):
                             self.player.status = 0
-                            terminate = True
-                            restart = True"""
+                            self.terminate = True
+                            self.restart = True
 
                     self.gameWindow.fill((10, 10, 10))
                     self.gameWindow.fill(Colors.black, pygame.Rect((0,0), (self.screen[0], self.screen[1] * 0.1)))
