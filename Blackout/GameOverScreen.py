@@ -13,7 +13,7 @@ class GameOverScreen():
     ]
     animationDone = False
 
-    def __init__(self, screen):
+    def __init__(self, screen, difficulty_index):
         self.counter = 0
         self.max_color_num = int(255 * 0.3)  # maximum color value for background
         self.text_color_min = int(255 * 0.3)  # minimum color value for text
@@ -22,10 +22,10 @@ class GameOverScreen():
             self.options.append(Button(50, screen[1] * 0.25, (screen[0] * 0.6), (screen[1] * 0.6 + i * 80), self.options_txt[i], Colors.white, Fonts.standard, Colors.black))
         self.spinner = GameOverSpinnerAnimation(screen, 255)
         self.gameOverTxt = Fonts.title.render("You Blacked Out...", False, (self.text_color, self.text_color, self.text_color))
-        self.highScores = HighScoreDisplay((screen[0] * 0.5 - self.gameOverTxt.get_width() / 2), (screen[1] * 0.1 + self.gameOverTxt.get_height() + 20), (screen[0] * 0.4), (screen[1] * 0.6))
+        self.highScores = HighScoreDisplay((screen[0] * 0.5 - self.gameOverTxt.get_width() / 2), (screen[1] * 0.1 + self.gameOverTxt.get_height() + 20), (screen[0] * 0.4), (screen[1] * 0.6), difficulty_index)
 
 
-    def update(self, window, screen, time):
+    def update(self, window, screen, time, difficulty_index):
         self.bg_color = Colors.black[0]
         self.text_color = Colors.white[0]
 
@@ -40,7 +40,7 @@ class GameOverScreen():
             self.options[i].update(window)
 
         # show the high scores on this screen
-        self.highScores.update(window)
+        self.highScores.update(window, difficulty_index)
 
         self.spinner.update(window)
         self.displayTime(time, window, screen)

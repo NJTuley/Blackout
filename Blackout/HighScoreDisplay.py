@@ -3,6 +3,7 @@ from ScoreItem import ScoreItem
 import Colors
 import Fonts
 import HighScores
+from Difficulty import difficulties
 
 
 NUM_SCORES = 10
@@ -11,7 +12,7 @@ class HighScoreDisplay():
 
     scoreDisplays = []
 
-    def __init__(self, x, y, width, height):
+    def __init__(self, x, y, width, height, difficulty_index):
         fileName = "Assets/highscores.txt"
         self.x = x
         self.y = y
@@ -20,12 +21,12 @@ class HighScoreDisplay():
 
         self.scoreBorderWidth = 4
 
-        self.scoreTitle = Fonts.large.render("High Scores", False, Colors.white)
+        self.scoreTitle = Fonts.large.render(difficulties[difficulty_index].name + " High Scores", False, Colors.white)
 
         HighScores.importScores(fileName)
 
         HighScores.sortScores()
-        scores_len = len(HighScores.scores)
+        scores_len = len(HighScores.all_scores[difficulty_index])
 
         for i in range(NUM_SCORES):
 
@@ -34,8 +35,8 @@ class HighScoreDisplay():
                 timeVal = " - "
                 nameVal = " - "
             elif (scores_len <=  NUM_SCORES and i < scores_len):
-                timeVal = self.getTimeFormatted(HighScores.scores[i].time)
-                nameVal = HighScores.scores[i].name
+                timeVal = self.getTimeFormatted(HighScores.all_scores[difficulty_index][i].time)
+                nameVal = HighScores.all_scores[difficulty_index][i].name
             else:
                 raise Exception("Too many high scores imported")
 
@@ -46,9 +47,9 @@ class HighScoreDisplay():
                                                 self.height / 10 - 2 * self.scoreBorderWidth))
 
 
-    def update(self, window):
+    def update(self, window, difficulty_index):
         self.scoreDisplays.clear()
-        scores_len = len(HighScores.scores)
+        scores_len = len(HighScores.all_scores[difficulty_index])
 
         for i in range(NUM_SCORES):
 
@@ -57,8 +58,8 @@ class HighScoreDisplay():
                 timeVal = " - "
                 nameVal = " - "
             elif (scores_len <=  NUM_SCORES and i < scores_len):
-                timeVal = self.getTimeFormatted(HighScores.scores[i].time)
-                nameVal = HighScores.scores[i].name
+                timeVal = self.getTimeFormatted(HighScores.all_scores[difficulty_index][i].time)
+                nameVal = HighScores.all_scores[difficulty_index][i].name
             else:
                 raise Exception("Too many high scores imported")
 

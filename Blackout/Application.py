@@ -26,18 +26,8 @@ class Application():
     pygame.mixer.set_num_channels(2)  # set the maximum number of channels of playback that are allowed for audio
     songPlayback = pygame.mixer.Channel(0)  # the channel that will play the background music for the game during play
 
-    # list of songs that will be played as background music during active gameplay (not during menus)
-    songs = [
-        Song("Assets/Music/Tobu - Seven.wav", "Seven", "Tobu", (3, 54)),
-        Song("Assets/Music/Tobu - Hope.wav", "Hope", "Tobu", (4, 46)),
-        Song("Assets/Music/Itro & Tobu - Cloud 9.wav", "Cloud 9", "Itro & Tobu", (4, 36)),
-        Song("Assets/Music/Tobu & Itro - Sunburst.wav", "Sunburst", "Tobu & Itro", (3, 11)),
-        Song("Assets/Music/Tobu - Infectious.wav", "Infectious", "Tobu", (4, 17)),
-        Song("Assets/Music/Tobu - Candyland [NCS Release].wav", "Candyland", "Tobu", (3, 19)),
-        Song("Assets/Music/Alan Walker - Spectre [NCS Release].wav", "Spectre", "Alan Walker", (3, 47)),
-        Song("Assets/Music/Jim Yosef - Firefly.wav", "Firefly", "Jim Yosef", (4, 17)),
-        Song("Assets/Music/Elektronomia - Limitless.wav", "Limitless", "Elektronomia", (4,4))
-    ]
+    # song that will play during the main menu
+    title_song = Song("Assets/Music/Elektronomia - Limitless.wav", "Limitless", "Elektronomia", (4, 4))
 
     # the different states that the game can be in
     game_states = {
@@ -98,15 +88,21 @@ class Application():
             'milliseconds': 0
         }
 
-        self.curr_song = self.songs[0]  # the song that is currently being used for background music
 
         # initialize all screens and menus
         self.mainMenu = MainMenu(self.screen[0], self.screen[1])
-        self.gameOverScreen = GameOverScreen(self.screen)
-        self.pauseMenu = PauseMenu(self.screen[0], self.screen[1])
+        diff_index = -1
+        for i in range(len(difficulties)):
+            if self.difficulty_level == difficulties[i]:
+                diff_index = i
+        if(diff_index != -1):
+            self.gameOverScreen = GameOverScreen(self.screen, diff_index)
+        else:
+            raise Exception("Invalid difficulty index")
 
-        # the index of the song to be played by the system
-        self.song_num = random.randint(0, len(self.songs) - 1)
+
+        self.curr_song = self.title_song
+        self.pauseMenu = PauseMenu(self.curr_song, self.screen[0], self.screen[1])
         # text field to gather new text input from the user that will be the 3 character long name associated with a new high score
         self.newHighScoreInput = TextField("New High Score, type your name and press enter!:", self.screen)
 
@@ -122,7 +118,7 @@ class Application():
 
                 # User is in the main menu
                 if(self.game_state == self.game_states['Main Menu']):
-                    self.curr_song = self.songs[8]
+                    self.curr_song = self.title_song
                     self.curr_song.play(self.fps / 2)
 
                 while(self.game_state == self.game_states['Main Menu'] and not self.terminate):
@@ -191,7 +187,15 @@ class Application():
                 while(self.game_state == self.game_states['Game Over'] and not self.terminate):
                     # player is seeing the game over screen
                     pygame.mouse.set_visible(True)
-                    self.gameOverScreen.update(self.gameWindow, self.screen, self.gameplay_time)
+                    diff_index = -1
+                    for i in range(len(difficulties)):
+                        if self.difficulty_level == difficulties[i]:
+                            diff_index = i
+                    if (diff_index != -1):
+                        self.gameOverScreen.update(self.gameWindow, self.screen, self.gameplay_time, diff_index)
+                    else:
+                        raise Exception("Invalid difficulty index")
+
                     while(HighScores.newHighScore):
                         for event in pygame.event.get():
                             if(event.type == pygame.QUIT):
@@ -203,9 +207,9 @@ class Application():
                                 if(event.key == pygame.K_RETURN):
                                     HighScores.newHighScore = False
                                     if(self.newHighScoreInput.nameIn == "(3 characters maximum)"):
-                                        HighScores.newHighScoreInsert(self.gameplay_time, "NAN")
+                                        HighScores.newHighScoreInsert(self.gameplay_time, "NAN", self.difficulty_level)
                                     else:
-                                        HighScores.newHighScoreInsert(self.gameplay_time, self.newHighScoreInput.nameIn)
+                                        HighScores.newHighScoreInsert(self.gameplay_time, self.newHighScoreInput.nameIn[0:3], self.difficulty_level)
                                 if(event.key == pygame.K_ESCAPE):
                                     HighScores.newHighScore = False
                                 if(event.key == pygame.K_BACKSPACE):
@@ -383,7 +387,7 @@ class Application():
                     if(self.player.status == 0):
                         self.game_state = self.game_states['Game Over']
                         # check if this player got a high score, and record it accordingly
-                        if(HighScores.isHighScore(self.gameplay_time)):
+                        if(HighScores.isBestScore(self.gameplay_time, self.difficulty_level)):
                             HighScores.newHighScore = True
 
 
@@ -393,8 +397,8 @@ class Application():
         self.restart = True
 
         self.curr_song.fadeout(10)
-        self.song_num = random.randint(0, len(self.songs) - 2)
-        self.curr_song = self.songs[self.song_num]
+        self.song_num = random.randint(0, len(self.difficulty_level.songs) - 1)
+        self.curr_song = self.difficulty_level.songs[self.song_num]
 
         # reset the game counter (keeps track of what to do when by modulus operation)
         self.counter = 0
@@ -411,8 +415,17 @@ class Application():
         self.restart = True
         self.resetStopWatch()
         self.counter = 0
-        self.curr_song = self.songs[self.song_num]
+        self.song_num = random.randint(0, len(self.difficulty_level.songs) - 1)
+        self.curr_song = self.difficulty_level.songs[self.song_num]
         self.curr_song.play(self.fps / 2)
+        diff_index = -1
+        for i in range(len(difficulties)):
+            if self.difficulty_level == difficulties[i]:
+                diff_index = i
+        if(diff_index != -1):
+            self.gameOverScreen = GameOverScreen(self.screen, diff_index)
+        else:
+            raise Exception("Invalid difficulty index")
 
         self.numTimesSpeedUp = self.difficulty_level.max_fpr - self.difficulty_level.min_fpr  # the number of times that the game will speed up before it reaches the maximum speed
 
@@ -485,6 +498,7 @@ class Application():
 
     def pauseGame(self):
         self.game_state = self.game_states['Game Paused']
+        self.pauseMenu = PauseMenu(self.curr_song, self.screen[0], self.screen[1])
         self.curr_song.pause()
 
 
@@ -511,7 +525,7 @@ class Application():
         self.gameWindow.blit(restartTxt, (self.screen[0] * 0.95 - restartTxt.get_width(), self.screen[1] * 0.1 * 0.5 - (
         (pauseTxt.get_height() + restartTxt.get_height()) / 2) + pauseTxt.get_height()))
 
-        if(HighScores.isBestScore(self.gameplay_time)):
+        if(HighScores.isHighScore(self.gameplay_time, self.difficulty_level)):
             newScoretxt = Fonts.standard.render("YOU GOT A NEW BEST SCORE!!", False, Colors.white)
             self.gameWindow.blit(newScoretxt, (self.screen[0] * 0.52 - newScoretxt.get_width() * 0.5, self.screen[1] * 0.1 * 0.5 - newScoretxt.get_height() * 0.5))
 

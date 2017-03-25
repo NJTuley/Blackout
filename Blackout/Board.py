@@ -134,8 +134,6 @@ class Board():
             print("Error", self.numActiveTiles, len(self.activeTiles))
             raise Exception("Error: Active Tile Count Mismatch")
 
-        for tile in self.activeTiles:
-            print(tile.value)
 
 
 
