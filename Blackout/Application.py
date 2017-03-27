@@ -19,6 +19,7 @@ from PulseAnimation import PulseAnimation
 from TextField import TextField
 from helpScreen import helpScreen
 from Difficulty import difficulties
+from EpilepsyWarning import EpilepsyWarning
 
 
 class Application():
@@ -68,7 +69,7 @@ class Application():
         self.restart = True  # whether or not this game session has ended (if True it returns you to main menu or game over screen)
         self.terminate = False  # whether or not to restart a new game
         # initialize starter values
-        self.game_state = self.game_states['Main Menu']
+        self.game_state = self.game_states['Main Menu']  # displays the epilepsy warning
         # variables to determine where the player is moving towards this frame
         self.playerYMove = 0
         self.playerXMove = 0
@@ -108,6 +109,10 @@ class Application():
 
 
     def run(self):
+        self.fps = 30
+        self.gameClock.tick(self.fps)
+        self.epilepsy_warning = EpilepsyWarning(self.screen)
+        self.epilepsy_warning.run(self.gameWindow, self.fps, self.gameClock)
         while(self.restart):
             self.terminate = False
             while(not self.terminate):
@@ -115,11 +120,9 @@ class Application():
                 self.counter = 0
                 # the number of frames that pass between each tile iteration
                 self.framesPerRound = self.difficulty_level.max_fpr
-
-                # User is in the main menu
-                if(self.game_state == self.game_states['Main Menu']):
-                    self.curr_song = self.title_song
-                    self.curr_song.play(self.fps / 2)
+                # User is in the main menuif(self.game_state == self.game_states['Main Menu']):
+                self.curr_song = self.title_song
+                self.curr_song.play(self.fps / 2)
 
                 while(self.game_state == self.game_states['Main Menu'] and not self.terminate):
                     self.fps = 30
