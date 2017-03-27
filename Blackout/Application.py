@@ -210,7 +210,7 @@ class Application():
                                 if(event.key == pygame.K_RETURN):
                                     HighScores.newHighScore = False
                                     if(self.newHighScoreInput.nameIn == "(3 characters maximum)"):
-                                        HighScores.newHighScoreInsert(self.gameplay_time, "NAN", self.difficulty_level)
+                                        HighScores.newHighScoreInsert(self.gameplay_time, "-", self.difficulty_level)
                                     else:
                                         HighScores.newHighScoreInsert(self.gameplay_time, self.newHighScoreInput.nameIn[0:3], self.difficulty_level)
                                 if(event.key == pygame.K_ESCAPE):
@@ -221,7 +221,8 @@ class Application():
                                     if(self.newHighScoreInput.nameIn == "(3 characters maximum)"):
                                         self.newHighScoreInput.nameIn = self.getKeyVal(event).upper()
                                     else:
-                                        self.newHighScoreInput.nameIn += self.getKeyVal(event).upper()
+                                        if(len(self.newHighScoreInput.nameIn) < 3):
+                                            self.newHighScoreInput.nameIn += self.getKeyVal(event).upper()
                         self.newHighScoreInput.update(self.gameWindow)
                         pygame.display.update()
 
